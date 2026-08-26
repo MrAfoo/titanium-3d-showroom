@@ -51,29 +51,86 @@
   const btnSwitchBuds = document.getElementById('btnSwitchBuds');
 
   /* --------------------------------------------------------
-     PRELOADING QUAD PIPELINES (ASYNC STREAMING)
+     PRELOADING QUAD PIPELINES (SMART TIERED STREAMING)
      -------------------------------------------------------- */
   const imgsPhone = new Array(FRAME_COUNT);
   const imgsTab = new Array(FRAME_COUNT);
   const imgsWatch = new Array(FRAME_COUNT);
   const imgsBuds = new Array(FRAME_COUNT);
 
-  function preloadPipeline(folder, targetArray, drawFirstFrame) {
-    for (let i = 0; i < FRAME_COUNT; i++) {
-      const img = new Image();
-      img.src = `${folder}/ezgif-frame-${pad3(i + 1)}.jpg`;
-      if (i === 0 && drawFirstFrame) {
-        img.onload = () => drawFirstFrame();
-      }
-      targetArray[i] = img;
+  function getLoadedFrame(targetArray, idx) {
+    if (targetArray[idx] && targetArray[idx].complete && targetArray[idx].naturalWidth > 0) {
+      return targetArray[idx];
     }
+    // Search outwards for nearest loaded frame
+    for (let delta = 1; delta < FRAME_COUNT; delta++) {
+      const prev = idx - delta;
+      if (prev >= 0 && targetArray[prev] && targetArray[prev].complete && targetArray[prev].naturalWidth > 0) {
+        return targetArray[prev];
+      }
+      const next = idx + delta;
+      if (next < FRAME_COUNT && targetArray[next] && targetArray[next].complete && targetArray[next].naturalWidth > 0) {
+        return targetArray[next];
+      }
+    }
+    return targetArray[0] && targetArray[0].complete ? targetArray[0] : null;
   }
 
-  // Start background streaming
-  preloadPipeline('frame', imgsPhone, () => { if (typeof redrawPhone === 'function') redrawPhone(); });
-  preloadPipeline('frame_tab', imgsTab, () => { if (typeof redrawTab === 'function') redrawTab(); });
-  preloadPipeline('frame_watch', imgsWatch, () => { if (typeof redrawWatch === 'function') redrawWatch(); });
-  preloadPipeline('frame_buds', imgsBuds, () => { if (typeof redrawBuds === 'function') redrawBuds(); });
+  function preloadPipelineSmart(folder, targetArray, drawFirstFrame) {
+    // Tier 1: Hero Frame 1 (Instant Render < 100ms)
+    const img1 = new Image();
+    img1.src = `${folder}/ezgif-frame-001.jpg`;
+    img1.onload = () => { if (drawFirstFrame) drawFirstFrame(); };
+    targetArray[0] = img1;
+
+    // Tier 2: Keyframes (Every 4th frame for instant scrub responsiveness)
+    const keyframes = [];
+    const inBetween = [];
+    for (let i = 1; i < FRAME_COUNT; i++) {
+      if (i % 4 === 0 || i === FRAME_COUNT - 1) {
+        keyframes.push(i);
+      } else {
+        inBetween.push(i);
+      }
+    }
+
+    keyframes.forEach((i) => {
+      const img = new Image();
+      img.src = `${folder}/ezgif-frame-${pad3(i + 1)}.jpg`;
+      targetArray[i] = img;
+    });
+
+    // Tier 3: Staggered micro-batches for in-between frames during browser idle time
+    setTimeout(() => {
+      let bIdx = 0;
+      function loadBatch() {
+        const end = Math.min(inBetween.length, bIdx + 8);
+        for (let j = bIdx; j < end; j++) {
+          const i = inBetween[j];
+          if (!targetArray[i]) {
+            const img = new Image();
+            img.src = `${folder}/ezgif-frame-${pad3(i + 1)}.jpg`;
+            targetArray[i] = img;
+          }
+        }
+        bIdx = end;
+        if (bIdx < inBetween.length) {
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadBatch);
+          } else {
+            setTimeout(loadBatch, 40);
+          }
+        }
+      }
+      loadBatch();
+    }, 120);
+  }
+
+  // Start smart tiered streaming across all 4 products
+  preloadPipelineSmart('frame', imgsPhone, () => { if (typeof redrawPhone === 'function') redrawPhone(); });
+  preloadPipelineSmart('frame_tab', imgsTab, () => { if (typeof redrawTab === 'function') redrawTab(); });
+  preloadPipelineSmart('frame_watch', imgsWatch, () => { if (typeof redrawWatch === 'function') redrawWatch(); });
+  preloadPipelineSmart('frame_buds', imgsBuds, () => { if (typeof redrawBuds === 'function') redrawBuds(); });
 
   let redrawPhone, redrawTab, redrawWatch, redrawBuds;
 
@@ -156,14 +213,14 @@
     }
 
     /* --------------------------------------------------------
-       DRAW FUNCTIONS
+       DRAW FUNCTIONS (WITH NEAREST-FRAME FALLBACK)
        -------------------------------------------------------- */
     function drawPhone(idx, force) {
       if (!ctxPhone) return;
       idx = Math.max(0, Math.min(FRAME_COUNT - 1, idx));
       if (idx === lastDrawn_Phone && !force) return;
-      const img = imgsPhone[idx] || imgsPhone[0];
-      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const img = getLoadedFrame(imgsPhone, idx);
+      if (!img) return;
 
       ctxPhone.fillStyle = '#dcdee0';
       ctxPhone.fillRect(0, 0, logW_P, logH_P);
@@ -188,8 +245,8 @@
       if (!ctxTab) return;
       idx = Math.max(0, Math.min(FRAME_COUNT - 1, idx));
       if (idx === lastDrawn_Tab && !force) return;
-      const img = imgsTab[idx] || imgsTab[0];
-      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const img = getLoadedFrame(imgsTab, idx);
+      if (!img) return;
 
       ctxTab.fillStyle = '#dcdee0';
       ctxTab.fillRect(0, 0, logW_T, logH_T);
@@ -214,8 +271,8 @@
       if (!ctxWatch) return;
       idx = Math.max(0, Math.min(FRAME_COUNT - 1, idx));
       if (idx === lastDrawn_Watch && !force) return;
-      const img = imgsWatch[idx] || imgsWatch[0];
-      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const img = getLoadedFrame(imgsWatch, idx);
+      if (!img) return;
 
       ctxWatch.fillStyle = '#dcdee0';
       ctxWatch.fillRect(0, 0, logW_W, logH_W);
@@ -240,8 +297,8 @@
       if (!ctxBuds) return;
       idx = Math.max(0, Math.min(FRAME_COUNT - 1, idx));
       if (idx === lastDrawn_Buds && !force) return;
-      const img = imgsBuds[idx] || imgsBuds[0];
-      if (!img || !img.complete || img.naturalWidth === 0) return;
+      const img = getLoadedFrame(imgsBuds, idx);
+      if (!img) return;
 
       ctxBuds.fillStyle = '#dcdee0';
       ctxBuds.fillRect(0, 0, logW_B, logH_B);
@@ -261,6 +318,11 @@
       ctxBuds.drawImage(img, ox, oy, dw, dh);
       lastDrawn_Buds = idx;
     }
+
+    redrawPhone = () => drawPhone(0, true);
+    redrawTab = () => drawTab(0, true);
+    redrawWatch = () => drawWatch(0, true);
+    redrawBuds = () => drawBuds(0, true);
 
     /* --------------------------------------------------------
        UNIFIED 60FPS LERP LOOP
