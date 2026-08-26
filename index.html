@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Galaxy S26 · Tab S11 · Watch Ultra · Buds Pro | Titanium Quad-Showcase</title>
+  <meta name="description"
+    content="Next-generation hardware deconstruction showroom. Explore the Galaxy S26 Ultra, Tab S11 Ultra, Watch Ultra, and Buds Pro in real-time 3D scrollytelling." />
+
+  <!-- Google Fonts: Syne (Ultra-Display) + Inter (Precision Body) + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Syne:wght@600;700;800;900&display=swap"
+    rel="stylesheet" />
+
+  <!-- External GSAP 3 & Plugins -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+
+  <!-- Modular CSS Styling -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ============================================================
+       FLOATING ISLAND HEADER & NAVIGATION
+       ============================================================ -->
+  <div class="navbar-wrapper">
+    <header class="navbar" id="mainNavbar">
+      <a href="#" class="navbar-brand" aria-label="Titanium Quad Showroom Home">
+        <div class="brand-hex">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <span class="navbar-name">TITANIUM</span>
+        <span class="brand-badge">QUAD</span>
+      </a>
+
+      <!-- Product Switcher Segment (4 Products) -->
+      <nav class="nav-switcher" aria-label="Product Ecosystem Switcher">
+        <a href="#phoneStage" class="nav-switch-btn active" id="btnSwitchPhone">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+          <span>Phone</span>
+        </a>
+        <a href="#tabStage" class="nav-switch-btn" id="btnSwitchTab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+            <line x1="8" y1="2" x2="16" y2="2"></line>
+            <line x1="12" y1="17" x2="12" y2="17.01"></line>
+          </svg>
+          <span>Tab</span>
+        </a>
+        <a href="#watchStage" class="nav-switch-btn" id="btnSwitchWatch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="7"></circle>
+            <polyline points="12 9 12 12 13.5 13.5"></polyline>
+            <path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"></path>
+          </svg>
+          <span>Watch</span>
+        </a>
+        <a href="#budsStage" class="nav-switch-btn" id="btnSwitchBuds">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+          </svg>
+          <span>Buds</span>
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Studio Audio Haptics Equalizer Toggle -->
+        <button class="btn-audio" id="btnAudio" aria-label="Toggle Studio Audio Haptics" title="Toggle Mechanical Audio Haptics">
+          <div class="equalizer-bars">
+            <span class="eq-bar bar-1"></span>
+            <span class="eq-bar bar-2"></span>
+            <span class="eq-bar bar-3"></span>
+          </div>
+          <span class="audio-label">Haptics</span>
+        </button>
+
+        <!-- Direct Pre-Order Action Link to Samsung Website -->
+        <a href="https://www.samsung.com" target="_blank" rel="noopener noreferrer" class="nav-cta-btn" id="btnPreOrder" aria-label="Pre-Order Titanium Ecosystem">Pre-Order</a>
+      </div>
+    </header>
+  </div>
+
+  <!-- ============================================================
+       PRE-ORDER MODAL SHEET
+       ============================================================ -->
+  <div id="preorderModal" class="preorder-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="preorder-backdrop" id="modalBackdrop"></div>
+    <div class="preorder-card">
+      <button class="modal-close" id="modalClose" aria-label="Close Pre-Order Sheet">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="modal-tag">RESERVE YOUR ALLOCATION</div>
+      <h3 class="modal-title">Pre-Order Titanium Quad</h3>
+      <p class="modal-desc">Select your precision-engineered device configuration. Ships worldwide with priority express logistics.</p>
+
+      <div class="order-selection-grid">
+        <label class="order-opt active">
+          <input type="radio" name="deviceOpt" value="phone" checked />
+          <div class="opt-content">
+            <div class="opt-head"><b>Galaxy S26 Titanium</b><span>From $1,199</span></div>
+            <div class="opt-spec">4nm EUV Silicon · 200MP Quad-Prism</div>
+          </div>
+        </label>
+
+        <label class="order-opt">
+          <input type="radio" name="deviceOpt" value="tab" />
+          <div class="opt-content">
+            <div class="opt-head"><b>Galaxy Tab S11 Ultra</b><span>From $1,299</span></div>
+            <div class="opt-spec">14.6" Dynamic AMOLED 2X · 11,200mAh</div>
+          </div>
+        </label>
+
+        <label class="order-opt">
+          <input type="radio" name="deviceOpt" value="watch" />
+          <div class="opt-content">
+            <div class="opt-head"><b>Titanium Watch Ultra</b><span>From $799</span></div>
+            <div class="opt-spec">Grade 5 Armor · 100m Water Sealed</div>
+          </div>
+        </label>
+
+        <label class="order-opt">
+          <input type="radio" name="deviceOpt" value="buds" />
+          <div class="opt-content">
+            <div class="opt-head"><b>Titanium Buds Pro</b><span>From $299</span></div>
+            <div class="opt-spec">11mm Titanium Drivers · -48dB ANC</div>
+          </div>
+        </label>
+
+        <label class="order-opt bundle-opt">
+          <input type="radio" name="deviceOpt" value="quad-bundle" />
+          <div class="opt-content">
+            <div class="opt-head"><b>Complete Quad Pantheon</b><span>$2,999 <small class="save-tag">SAVE $597</small></span></div>
+            <div class="opt-spec">S26 Ultra + Tab S11 + Watch Ultra + Buds Pro with Priority White-Glove Shipping</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-checkout" id="btnCheckout">
+          <span>Proceed to Secure Reservation</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-footer-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <span>Zero-risk reservation. Full refund guarantee prior to logistics dispatch.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       PRODUCT 1: GALAXY S26 TITANIUM ULTRA (SMARTPHONE)
+       ============================================================ -->
+  <main class="scroll-stage" id="phoneStage">
+
+    <!-- Sticky Phone Canvas -->
+    <div class="canvas-wrap" id="canvasWrapPhone">
+      <canvas class="seq-canvas" id="canvasPhone"></canvas>
+      <div class="canvas-vignette"></div>
+      <div class="cursor-spotlight"></div>
+
+      <!-- Telemetry Hotspots (Active in full exploded view: Frames 125 - 191) -->
+      <div class="hotspots-layer" id="hotspotsPhone">
+        <!-- Hotspot 1: Front Display Panel & Armor Glass (Far Left) -->
+        <div class="hotspot-pin" style="top: 46%; left: 16%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Front Display">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Optics &amp; Display Barrier · QHD+</div>
+            <div class="pin-card-title">Dynamic AMOLED 2X Display</div>
+            <div class="pin-card-desc">6.8" Flat LTPO panel with 2,600 nits peak brightness and anti-reflective armor shield glass.</div>
+            <div class="pin-card-spec">REFRESH: <b>1Hz – 120Hz Variable</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 2: Silicon-Carbon Battery Cell (Left-Center) -->
+        <div class="hotspot-pin" style="top: 56%; left: 34%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Battery Core">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Energy Density · Silicon-Carbon</div>
+            <div class="pin-card-title">Dual-Cell Anode Core</div>
+            <div class="pin-card-desc">Next-generation 820 Wh/L chemistry delivering up to 32+ hours of active battery life.</div>
+            <div class="pin-card-spec">CAPACITY: <b>5,400 mAh · 65W Fast Charge</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 3: Snapdragon 8 Elite Neural Engine SoC (Center Logic Board) -->
+        <div class="hotspot-pin" style="top: 34%; left: 41%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Snapdragon Neural Engine">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Silicon Architecture · 4nm EUV</div>
+            <div class="pin-card-title">Neural Engine Mainboard</div>
+            <div class="pin-card-desc">Oryon Prime CPU with 45 TOPS dedicated NPU running on-device multimodal AI models.</div>
+            <div class="pin-card-spec">COMPUTE: <b>4.32 GHz Peak · 45 TOPS</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 4: Grade 5 Titanium Armor Chassis (Center Frame) -->
+        <div class="hotspot-pin" style="top: 50%; left: 50%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Titanium Chassis">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Structural Integrity · Grade 5</div>
+            <div class="pin-card-title">Forged Titanium Chassis</div>
+            <div class="pin-card-desc">PVD-coated aerospace titanium perimeter with internal liquid vapor chamber heatpipe.</div>
+            <div class="pin-card-spec">STRENGTH: <b>980 MPa Tensile Rigidity</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 5: 200MP Quad-Prism Periscope Sensor (Top Right Camera Stack) -->
+        <div class="hotspot-pin" style="top: 26%; left: 75%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect 200MP Sensor">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Optics Subsystem · 200MP</div>
+            <div class="pin-card-title">Quad-Prism Telephoto</div>
+            <div class="pin-card-desc">Floating prism glass with 10x optical zoom and 3D sensor-shift optical image stabilization.</div>
+            <div class="pin-card-spec">SENSOR: <b>1/1.14" ISOCELL HP2</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phone Phase 0: Hero Intro with Animated Title -->
+    <section class="phase phase-hero" data-stage="phone" data-phase="0" data-frame-start="0" data-frame-end="25">
+      <div class="phase-card">
+        <div class="product-hero-badge">
+          <span class="badge-dot-glow"></span>
+          <span class="badge-text-shimmer">Hardware Engineering · Chapter I</span>
+        </div>
+        <h1 class="hero-product-title">
+          <span class="title-sub">GALAXY</span>
+          <span class="title-hero-glow">S26</span>
+          <span class="title-sub">TITANIUM</span>
+        </h1>
+        <p class="phase-desc">
+          Grade 5 Titanium Armor. 4nm EUV Silicon. 200MP Quad-Prism Optics. Scroll to deconstruct every microscopic layer in real-time 3D.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="192">0</span></div>
+            <div class="phase-stat-label">HD Frames</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="60" data-suffix=" FPS">0</span></div>
+            <div class="phase-stat-label">Canvas Lerp</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="4" data-suffix="x">0</span></div>
+            <div class="phase-stat-label">Ecosystem</div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-cue">
+        <div class="scroll-pill">
+          <div class="scroll-dot"></div>
+        </div>
+        <span>Scroll to Explore</span>
+      </div>
+    </section>
+
+    <!-- Phone Phase 1: Aerospace Chassis -->
+    <section class="phase" data-stage="phone" data-phase="1" data-frame-start="26" data-frame-end="70">
+      <div class="phase-card">
+        <span class="phase-num">01 · PRECISION ARCHITECTURE</span>
+        <h2 class="phase-title">Grade 5 Titanium.<br>Forged to Perfection.</h2>
+        <p class="phase-desc">
+          Precision-machined from aerospace-grade Ti-6Al-4V alloy.
+          Diffusion-bonded to an internal aluminum sub-structure for maximum rigidity
+          at minimum weight.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">Ti-6Al-4V</div>
+            <div class="phase-stat-label">Alloy Spec</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="187" data-suffix=" g">0</span></div>
+            <div class="phase-stat-label">Chassis Weight</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phone Phase 2: Internal Stack -->
+    <section class="phase" data-stage="phone" data-phase="2" data-frame-start="71" data-frame-end="125">
+      <div class="phase-card">
+        <span class="phase-num">02 · COMPUTATIONAL DENSITY</span>
+        <h2 class="phase-title">Microscopic Scale.<br>Massive Compute.</h2>
+        <p class="phase-desc">
+          Layer by layer, the mainboard houses the 4nm Neural Engine, high-speed LPDDR5X memory,
+          and our custom power-management silicon — cooled by a 0.4mm vapor chamber.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">4 nm</div>
+            <div class="phase-stat-label">Process Node</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="45" data-suffix=" TOPS">0</span></div>
+            <div class="phase-stat-label">Neural Engine</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phone Phase 3: Optics Matrix -->
+    <section class="phase" data-stage="phone" data-phase="3" data-frame-start="126" data-frame-end="165">
+      <div class="phase-card">
+        <span class="phase-num">03 · PERISCOPE OPTICS</span>
+        <h2 class="phase-title">Quad-Prism Array.<br>Pure Light Capture.</h2>
+        <p class="phase-desc">
+          The 200MP primary sensor pairs with a floating prism periscope.
+          Dual optical image stabilization corrects hand movements up to 10,000 times per second.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="200" data-suffix=" MP">0</span></div>
+            <div class="phase-stat-label">Sensor Resolution</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="10" data-suffix="x">0</span></div>
+            <div class="phase-stat-label">Optical Zoom</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Phone Phase 4: Hermetic Seal -->
+    <section class="phase" data-stage="phone" data-phase="4" data-frame-start="166" data-frame-end="191">
+      <div class="phase-card">
+        <span class="phase-num">04 · STRUCTURAL CLOSURE</span>
+        <h2 class="phase-title">Hermetically Sealed.<br>Every Millimeter.</h2>
+        <p class="phase-desc">
+          Laser-welded ceramic glass fuses with the titanium band to achieve IP68 water
+          and dust resistance down to 6 meters for 30 minutes.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">IP68</div>
+            <div class="phase-stat-label">Submersion Rating</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="5400" data-suffix=" mAh">0</span></div>
+            <div class="phase-stat-label">Battery</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       INTERLUDE 1: THE CREATIVE CANVAS LINK (Phone -> Tab)
+       ============================================================ -->
+  <section class="interlude" id="interludeTab">
+    <div class="interlude-badge">Creative Architecture</div>
+    <h2 class="interlude-title">Infinite Canvas.<br>Ultra Power.</h2>
+    <p class="interlude-desc">
+      Scale from pocket intelligence to a breathtaking 14.6-inch Dynamic AMOLED 2X creative workstation.
+      Explore the microscopic architecture and 11,200mAh power core of the Galaxy Tab S11 Ultra.
+    </p>
+    <a href="#tabStage" class="interlude-cta">
+      <span>Scroll to Deconstruct Tablet</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <polyline points="19 12 12 19 5 12"></polyline>
+      </svg>
+    </a>
+  </section>
+
+  <!-- ============================================================
+       PRODUCT 2: GALAXY TAB S11 TITANIUM ULTRA (TABLET)
+       ============================================================ -->
+  <main class="scroll-stage" id="tabStage">
+
+    <!-- Sticky Tab Canvas -->
+    <div class="canvas-wrap" id="canvasWrapTab">
+      <canvas class="seq-canvas" id="canvasTab"></canvas>
+      <div class="canvas-vignette"></div>
+      <div class="cursor-spotlight"></div>
+
+      <!-- Tab Telemetry Hotspots (Right 2 dots open UPWARD, left 3 dots open DOWNWARD) -->
+      <div class="hotspots-layer" id="hotspotsTab">
+        <!-- Hotspot 1: 14.6" Dynamic AMOLED 2X Display (Far Left Panel - Downward) -->
+        <div class="hotspot-pin pos-bottom" style="top: 48%; left: 14%;" data-min-frame="125" data-max-frame="155">
+          <button class="pin-beacon" aria-label="Inspect 14.6-inch Display">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Display Architecture · 14.6" QHD+</div>
+            <div class="pin-card-title">Dynamic AMOLED 2X Panel</div>
+            <div class="pin-card-desc">120Hz LTPO display with anti-reflective armor coating, 1,750 nits peak, and 2.8ms S-Pen latency.</div>
+            <div class="pin-card-spec">PEN LATENCY: <b>2.8ms Ultra-Fast</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 2: Display Controller & Micro-Logic Array (Left Mainboard - Downward) -->
+        <div class="hotspot-pin pos-bottom" style="top: 46%; left: 30%;" data-min-frame="125" data-max-frame="155">
+          <button class="pin-beacon" aria-label="Inspect Display Controller">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Signal Architecture · High-Speed Bus</div>
+            <div class="pin-card-title">Display Driver Mainboard</div>
+            <div class="pin-card-desc">Precision gold-plated flex interconnects driving multi-touch digitizer and hardware HDR rendering.</div>
+            <div class="pin-card-spec">BANDWIDTH: <b>48 Gbps Dynamic Bus</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 3: Armor Aluminum & Titanium Unibody Chassis (Center Midframe - Downward) -->
+        <div class="hotspot-pin pos-bottom" style="top: 46%; left: 49%;" data-min-frame="125" data-max-frame="155">
+          <button class="pin-beacon" aria-label="Inspect Unibody Chassis">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Structural Armor · 5.5mm Profile</div>
+            <div class="pin-card-title">Forged Titanium Midframe</div>
+            <div class="pin-card-desc">Ultra-rigid unibody housing with integrated magnetic S-Pen induction charger and camera ring cutouts.</div>
+            <div class="pin-card-spec">THICKNESS: <b>5.5mm Razor Slim</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 4: 11,200mAh Dual-Cell High-Density Battery (Right-Center Cell - Upward) -->
+        <div class="hotspot-pin pos-top" style="top: 48%; left: 61%;" data-min-frame="125" data-max-frame="155">
+          <button class="pin-beacon" aria-label="Inspect 11,200mAh Battery">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Energy Density · Dual-Cell</div>
+            <div class="pin-card-title">11,200 mAh Energy Core</div>
+            <div class="pin-card-desc">Advanced silicon-carbon dual battery array supporting 45W Super Fast Charging 2.0.</div>
+            <div class="pin-card-spec">CAPACITY: <b>11,200 mAh · 45W Fast</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 5: Snapdragon 8 Elite Silicon & Quad AKG Speakers (Far Right Mainboard - Upward) -->
+        <div class="hotspot-pin pos-top" style="top: 48%; left: 70%;" data-min-frame="125" data-max-frame="155">
+          <button class="pin-beacon" aria-label="Inspect Neural SoC and Quad Speakers">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Compute &amp; Sound · Quad AKG</div>
+            <div class="pin-card-title">Snapdragon 8 Elite &amp; Quad AKG</div>
+            <div class="pin-card-desc">4nm EUV compute paired with quad stereo speakers tuned by AKG with Dolby Atmos surround sound.</div>
+            <div class="pin-card-spec">AUDIO: <b>Quad AKG + Dolby Atmos</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Phase 0: Hero Intro with Animated Title -->
+    <section class="phase phase-hero" data-stage="tab" data-phase="0" data-frame-start="0" data-frame-end="25">
+      <div class="phase-card">
+        <div class="product-hero-badge">
+          <span class="badge-dot-glow"></span>
+          <span class="badge-text-shimmer">Hardware Engineering · Chapter II</span>
+        </div>
+        <h1 class="hero-product-title">
+          <span class="title-sub">GALAXY</span>
+          <span class="title-hero-glow">TAB S11</span>
+          <span class="title-sub">ULTRA</span>
+        </h1>
+        <p class="phase-desc">
+          14.6" Dynamic AMOLED 2X. 5.5mm Razor-Slim Titanium Armor. 11,200mAh Power Core. Scroll to deconstruct every layer in 3D.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">14.6"</div>
+            <div class="phase-stat-label">AMOLED 2X</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="5.5" data-decimals="1" data-suffix=" mm">0</span></div>
+            <div class="phase-stat-label">Chassis Profile</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="11200" data-suffix=" mAh">0</span></div>
+            <div class="phase-stat-label">Battery Core</div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-cue">
+        <div class="scroll-pill">
+          <div class="scroll-dot"></div>
+        </div>
+        <span>Scroll to Explore</span>
+      </div>
+    </section>
+
+    <!-- Tab Phase 1: 14.6" Ultra Canvas -->
+    <section class="phase" data-stage="tab" data-phase="1" data-frame-start="26" data-frame-end="70">
+      <div class="phase-card">
+        <span class="phase-num">01 · CREATIVE MATRIX</span>
+        <h2 class="phase-title">14.6" Dynamic AMOLED.<br>Pixel-Pure Precision.</h2>
+        <p class="phase-desc">
+          Engineered for digital masters and cinematic creation.
+          Anti-reflective nanocoatings cut glare by 75% while 120Hz LTPO refresh keeps every stroke buttery smooth.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="120" data-suffix=" Hz">0</span></div>
+            <div class="phase-stat-label">Adaptive LTPO</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="2.8" data-decimals="1" data-suffix=" ms">0</span></div>
+            <div class="phase-stat-label">S-Pen Latency</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab Phase 2: Compute Density & Cooling -->
+    <section class="phase" data-stage="tab" data-phase="2" data-frame-start="71" data-frame-end="125">
+      <div class="phase-card">
+        <span class="phase-num">02 · WORKSTATION SILICON</span>
+        <h2 class="phase-title">Oryon Compute Core.<br>Dual Vapor Chamber.</h2>
+        <p class="phase-desc">
+          Powered by the 4nm Snapdragon 8 Elite SoC, backed by a massive dual-layer liquid vapor chamber
+          dissipating sustained workloads for 8K video editing and 3D modeling.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">4 nm</div>
+            <div class="phase-stat-label">Process Node</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="45" data-suffix=" TOPS">0</span></div>
+            <div class="phase-stat-label">Neural NPU</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab Phase 3: Energy Endurance -->
+    <section class="phase" data-stage="tab" data-phase="3" data-frame-start="126" data-frame-end="165">
+      <div class="phase-card">
+        <span class="phase-num">03 · SUSTAINED POWER</span>
+        <h2 class="phase-title">11,200 mAh Dual-Cell.<br>All-Day Workflow.</h2>
+        <p class="phase-desc">
+          Dual-cell silicon-carbon battery pack delivers up to 16 hours of continuous video playback.
+          Recharge rapidly to 100% in under 85 minutes via 45W Super Fast Charging 2.0.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="11200" data-suffix=" mAh">0</span></div>
+            <div class="phase-stat-label">Dual-Cell Anode</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="45" data-suffix=" W">0</span></div>
+            <div class="phase-stat-label">Fast Charge</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab Phase 4: Quad AKG Acoustic & Slim Unibody -->
+    <section class="phase" data-stage="tab" data-phase="4" data-frame-start="166" data-frame-end="191">
+      <div class="phase-card">
+        <span class="phase-num">04 · SLIM ACOUSTIC UNIBODY</span>
+        <h2 class="phase-title">5.5mm Armor Titanium.<br>Quad AKG Spatial Sound.</h2>
+        <p class="phase-desc">
+          Four custom-engineered stereo speakers with Dolby Atmos spatial surround sound encased
+          within a razor-thin 5.5mm IP68 water-and-dust resistant chassis.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">5.5 mm</div>
+            <div class="phase-stat-label">Ultra-Slim</div>
+          </div>
+          <div>
+            <div class="phase-stat-val">Quad AKG</div>
+            <div class="phase-stat-label">Spatial Audio</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       INTERLUDE 2: THE WRIST INTELLIGENCE LINK (Tab -> Watch)
+       ============================================================ -->
+  <section class="interlude" id="interludeWatch">
+    <div class="interlude-badge">Biometric Telemetry</div>
+    <h2 class="interlude-title">Wrist Intelligence.<br>Unleashed.</h2>
+    <p class="interlude-desc">
+      Explore the precision sapphire glass, bio-sensing core, and 100m hydro-sealed titanium casing of the all-new Titanium Watch Ultra.
+    </p>
+    <a href="#watchStage" class="interlude-cta">
+      <span>Scroll to Deconstruct Watch</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <polyline points="19 12 12 19 5 12"></polyline>
+      </svg>
+    </a>
+  </section>
+
+  <!-- ============================================================
+       PRODUCT 3: TITANIUM WATCH ULTRA (SMARTWATCH)
+       ============================================================ -->
+  <main class="scroll-stage" id="watchStage">
+
+    <!-- Sticky Watch Canvas -->
+    <div class="canvas-wrap" id="canvasWrapWatch">
+      <canvas class="seq-canvas" id="canvasWatch"></canvas>
+      <div class="canvas-vignette"></div>
+      <div class="cursor-spotlight"></div>
+
+      <!-- Watch Telemetry Hotspots (Active in full exploded view: Frames 130 - 191) -->
+      <div class="hotspots-layer" id="hotspotsWatch">
+        <!-- Hotspot 1: Sapphire Crystal Glass Lens (Opens downward) -->
+        <div class="hotspot-pin" style="top: 48%; left: 19%;" data-min-frame="130" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Sapphire Crystal">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Optics Barrier · 9H Hardness</div>
+            <div class="pin-card-title">Sapphire Crystal Lens</div>
+            <div class="pin-card-desc">Diamond-machined flat sapphire crystal with anti-reflective and oleophobic nanocoatings.</div>
+            <div class="pin-card-spec">SCRATCH RESISTANCE: <b>Mohs Scale 9</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 2: Super Retina AMOLED Display (Opens downward) -->
+        <div class="hotspot-pin" style="top: 61%; left: 27%;" data-min-frame="130" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Retina AMOLED">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Display Architecture · LTPO</div>
+            <div class="pin-card-title">3,000 Nits Edge AMOLED</div>
+            <div class="pin-card-desc">1Hz–60Hz variable refresh rate delivering sunlight visibility with ultra-low idle power draw.</div>
+            <div class="pin-card-spec">BRIGHTNESS: <b>3,000 Nits Peak</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 3: Grade 5 Titanium Midframe (Opens downward) -->
+        <div class="hotspot-pin" style="top: 44%; left: 48%;" data-min-frame="130" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Titanium Midframe">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Structural Armor · GPS</div>
+            <div class="pin-card-title">Titanium Armor Chassis</div>
+            <div class="pin-card-desc">Forged Grade 5 Titanium housing with dual-frequency L1+L5 multi-satellite antenna array.</div>
+            <div class="pin-card-spec">GPS: <b>Precision Dual-Band</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 4: BioActive Multi-Sensor Matrix (Opens downward) -->
+        <div class="hotspot-pin" style="top: 57%; left: 60%;" data-min-frame="130" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect BioActive Sensor Core">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Biometrics · Sensor Array</div>
+            <div class="pin-card-title">BioActive Sensor Matrix</div>
+            <div class="pin-card-desc">Optical PPG, electrical ECG, bioelectrical impedance analysis (BIA), and skin temperature sensors.</div>
+            <div class="pin-card-spec">TELEMETRY: <b>ECG + SpO2 + BIA</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 5: 10 ATM Ceramic Rear Case (Opens downward) -->
+        <div class="hotspot-pin" style="top: 49%; left: 80%;" data-min-frame="130" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect 10 ATM Rear Case">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Hydro Barrier · Acoustics</div>
+            <div class="pin-card-title">10 ATM Ceramic Casing</div>
+            <div class="pin-card-desc">Zirconia ceramic hermetic casing with 86dB emergency acoustic siren and induction coil.</div>
+            <div class="pin-card-spec">DEPTH: <b>100m Water Resistant</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Watch Phase 0: Hero Intro with Animated Title -->
+    <section class="phase phase-hero" data-stage="watch" data-phase="0" data-frame-start="0" data-frame-end="25">
+      <div class="phase-card">
+        <div class="product-hero-badge">
+          <span class="badge-dot-glow"></span>
+          <span class="badge-text-shimmer">Hardware Engineering · Chapter III</span>
+        </div>
+        <h1 class="hero-product-title">
+          <span class="title-sub">TITANIUM</span>
+          <span class="title-hero-glow">WATCH</span>
+          <span class="title-sub">ULTRA</span>
+        </h1>
+        <p class="phase-desc">
+          Grade 5 Titanium Casing. Sapphire Crystal Optics. Dual-Frequency GPS. Scroll to deconstruct wrist intelligence in real-time 3D.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">49 mm</div>
+            <div class="phase-stat-label">Casing Size</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="3000" data-suffix=" Nits">0</span></div>
+            <div class="phase-stat-label">Peak Brightness</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="100" data-suffix=" m">0</span></div>
+            <div class="phase-stat-label">Water Sealed</div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-cue">
+        <div class="scroll-pill">
+          <div class="scroll-dot"></div>
+        </div>
+        <span>Scroll to Explore</span>
+      </div>
+    </section>
+
+    <!-- Watch Phase 1: 49mm Titanium Lug Housing -->
+    <section class="phase" data-stage="watch" data-phase="1" data-frame-start="26" data-frame-end="70">
+      <div class="phase-card">
+        <span class="phase-num">01 · EXPEDITION CASING</span>
+        <h2 class="phase-title">Grade 5 Aerospace.<br>Shock-Absorbing Lugs.</h2>
+        <p class="phase-desc">
+          Cushioned within an ultra-dense titanium bezel with raised perimeter guards to protect
+          the flat sapphire crystal from heavy direct impact.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">10 ATM</div>
+            <div class="phase-stat-label">Hydro Pressure</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="590" data-suffix=" MPa">0</span></div>
+            <div class="phase-stat-label">Yield Strength</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Watch Phase 2: BioActive Sensory Core -->
+    <section class="phase" data-stage="watch" data-phase="2" data-frame-start="71" data-frame-end="125">
+      <div class="phase-card">
+        <span class="phase-num">02 · BIOMETRIC MATRIX</span>
+        <h2 class="phase-title">Continuous Health.<br>Micro-Sensing Core.</h2>
+        <p class="phase-desc">
+          Optical PPG, electrical cardiac sensors, and bio-impedance electrodes form a tightly
+          integrated matrix delivering real-time blood oxygen, sleep stage tracking, and ECG readings.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">3-in-1</div>
+            <div class="phase-stat-label">Bio Sensor</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="86" data-suffix=" dB">0</span></div>
+            <div class="phase-stat-label">Emergency Siren</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Watch Phase 3: Dual-Frequency GPS & Antenna -->
+    <section class="phase" data-stage="watch" data-phase="3" data-frame-start="126" data-frame-end="165">
+      <div class="phase-card">
+        <span class="phase-num">03 · TELEMETRY NAVIGATION</span>
+        <h2 class="phase-title">L1 + L5 Bands.<br>Sub-Meter Precision.</h2>
+        <p class="phase-desc">
+          Dual-frequency satellite navigation tracks exact trails and metropolitan canyons
+          without signal loss, paired with an emergency 86dB siren audible up to 180 meters.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">L1+L5</div>
+            <div class="phase-stat-label">Dual GPS</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="180" data-suffix=" m">0</span></div>
+            <div class="phase-stat-label">Siren Range</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Watch Phase 4: Hydro Sealed Hermetics -->
+    <section class="phase" data-stage="watch" data-phase="4" data-frame-start="166" data-frame-end="191">
+      <div class="phase-card">
+        <span class="phase-num">04 · EXPEDITION ENDURANCE</span>
+        <h2 class="phase-title">100m Hydro Seal.<br>72-Hour Expedition.</h2>
+        <p class="phase-desc">
+          EN13319 certified for recreational scuba diving down to 40 meters.
+          Power management architecture provides up to 72 hours of multi-day GPS expedition tracking.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">100 m</div>
+            <div class="phase-stat-label">ISO 22810</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="72" data-suffix=" h">0</span></div>
+            <div class="phase-stat-label">Expedition Battery</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       INTERLUDE 3: THE ACOUSTIC LINK (Watch -> Buds)
+       ============================================================ -->
+  <section class="interlude" id="interludeBuds">
+    <div class="interlude-badge">Studio Acoustics</div>
+    <h2 class="interlude-title">Acoustic Architecture.<br>Re-Engineered.</h2>
+    <p class="interlude-desc">
+      When unmatched compute meets precision studio sound. Explore the internal
+      acoustic chamber, titanium drivers, and neural ANC of the all-new Titanium Buds Pro.
+    </p>
+    <a href="#budsStage" class="interlude-cta">
+      <span>Scroll to Deconstruct Buds</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <polyline points="19 12 12 19 5 12"></polyline>
+      </svg>
+    </a>
+  </section>
+
+  <!-- ============================================================
+       PRODUCT 4: TITANIUM BUDS PRO (EARBUDS)
+       ============================================================ -->
+  <main class="scroll-stage" id="budsStage">
+
+    <!-- Sticky Buds Canvas -->
+    <div class="canvas-wrap" id="canvasWrapBuds">
+      <canvas class="seq-canvas" id="canvasBuds"></canvas>
+      <div class="canvas-vignette"></div>
+      <div class="cursor-spotlight"></div>
+
+      <!-- Buds Telemetry Hotspots (Active in full exploded view: Frames 125 - 191) -->
+      <div class="hotspots-layer" id="hotspotsBuds">
+        <!-- Hotspot 1: 11mm Titanium Dynamic Driver -->
+        <div class="hotspot-pin" style="top: 52%; left: 56%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect 11mm Titanium Driver">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Acoustic Engine · Diaphragm</div>
+            <div class="pin-card-title">11mm Titanium Dynamic Driver</div>
+            <div class="pin-card-desc">Dual-layer composite diaphragm with high-excursion voice coil and neodymium magnets.</div>
+            <div class="pin-card-spec">FREQUENCY: <b>10 Hz – 45 kHz</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 2: Adaptive Neural ANC Silicon (Opens downward) -->
+        <div class="hotspot-pin" style="top: 38%; left: 45%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Neural ANC Silicon">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Sound Processor · ANC</div>
+            <div class="pin-card-title">H1 Neural Acoustic Chip</div>
+            <div class="pin-card-desc">Adaptive noise cancellation sampling ambient frequency 48,000 times per second.</div>
+            <div class="pin-card-spec">REDUCTION: <b>-48 dB Peak</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 3: Left Ergonomic Tip & Seal (Opens downward) -->
+        <div class="hotspot-pin" style="top: 50%; left: 14%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Silicone Acoustic Tip">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Ergonomic Seal · Liquid Silicone</div>
+            <div class="pin-card-title">Hypoallergenic Acoustic Tip</div>
+            <div class="pin-card-desc">Laser-vented contour seal engineered for pressure equalization and passive isolation.</div>
+            <div class="pin-card-spec">COMFORT: <b>Zero Ear-Fatigue</b></div>
+          </div>
+        </div>
+
+        <!-- Hotspot 4: Right Hermetic Acoustic Shell & Mics -->
+        <div class="hotspot-pin" style="top: 50%; left: 82%;" data-min-frame="125" data-max-frame="191">
+          <button class="pin-beacon" aria-label="Inspect Hermetic Shell">
+            <span class="beacon-pulse"></span>
+            <span class="beacon-core"></span>
+          </button>
+          <div class="pin-card">
+            <div class="pin-card-tag">Acoustic Hermetics · IPX7</div>
+            <div class="pin-card-title">Hermetic Moisture Barrier</div>
+            <div class="pin-card-desc">Precision-molded acoustic chamber nano-coated for water resistance with triple beamforming mics.</div>
+            <div class="pin-card-spec">RATING: <b>IPX7 Submersible</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buds Phase 0: Hero Intro with Animated Title -->
+    <section class="phase phase-hero" data-stage="buds" data-phase="0" data-frame-start="0" data-frame-end="25">
+      <div class="phase-card">
+        <div class="product-hero-badge">
+          <span class="badge-dot-glow"></span>
+          <span class="badge-text-shimmer">Studio Acoustics · Chapter IV</span>
+        </div>
+        <h1 class="hero-product-title">
+          <span class="title-sub">TITANIUM</span>
+          <span class="title-hero-glow">BUDS</span>
+          <span class="title-sub">PRO</span>
+        </h1>
+        <p class="phase-desc">
+          11mm Titanium Drivers. -48dB Adaptive Neural ANC. 24-bit Hi-Fi Lossless Codec. Scroll to deconstruct acoustic architecture in 3D.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">11 mm</div>
+            <div class="phase-stat-label">Titanium Driver</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="48" data-suffix=" dB" data-prefix="-">0</span></div>
+            <div class="phase-stat-label">Adaptive ANC</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="36" data-suffix=" h">0</span></div>
+            <div class="phase-stat-label">Total Battery</div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-cue">
+        <div class="scroll-pill">
+          <div class="scroll-dot"></div>
+        </div>
+        <span>Scroll to Explore</span>
+      </div>
+    </section>
+
+    <!-- Buds Phase 1: 11mm Titanium Driver Engine -->
+    <section class="phase" data-stage="buds" data-phase="1" data-frame-start="26" data-frame-end="70">
+      <div class="phase-card">
+        <span class="phase-num">01 · ACOUSTIC TRANSDUCER</span>
+        <h2 class="phase-title">11mm Titanium Dynamic.<br>Sub-Bass to 45kHz.</h2>
+        <p class="phase-desc">
+          Rigid vapor-deposited titanium diaphragm delivers distortion-free transient response
+          with ultra-deep sub-bass punch and sparkling studio treble.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">10Hz - 45kHz</div>
+            <div class="phase-stat-label">Frequency Band</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="24" data-suffix=" Bit">0</span></div>
+            <div class="phase-stat-label">Hi-Fi Audio</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buds Phase 2: Dual Acoustic Chamber -->
+    <section class="phase" data-stage="buds" data-phase="2" data-frame-start="71" data-frame-end="125">
+      <div class="phase-card">
+        <span class="phase-num">02 · PRESSURE EQUALIZATION</span>
+        <h2 class="phase-title">Dual Acoustic Chamber.<br>Zero Ear Fatigue.</h2>
+        <p class="phase-desc">
+          Micro-vented airflow equalization ports relieve in-ear occlusion and pressure buildup
+          while maximizing spatial stage openness and stereo imaging.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="5.4" data-decimals="1" data-suffix=" g">0</span></div>
+            <div class="phase-stat-label">Earbud Weight</div>
+          </div>
+          <div>
+            <div class="phase-stat-val">360°</div>
+            <div class="phase-stat-label">Spatial Audio</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buds Phase 3: Adaptive Neural ANC Silicon -->
+    <section class="phase" data-stage="buds" data-phase="3" data-frame-start="126" data-frame-end="165">
+      <div class="phase-card">
+        <span class="phase-num">03 · SILENT COMPUTE</span>
+        <h2 class="phase-title">Adaptive Neural<br>Noise Cancellation.</h2>
+        <p class="phase-desc">
+          Triple beamforming microphones continuously sample ambient environment noise,
+          generating real-time inverted anti-noise waveforms up to -48 dB.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="48" data-suffix=" dB" data-prefix="-">0</span></div>
+            <div class="phase-stat-label">Peak ANC</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="48" data-suffix=" kHz">0</span></div>
+            <div class="phase-stat-label">Sampling Rate</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Buds Phase 4: Sealed Hermetics -->
+    <section class="phase" data-stage="buds" data-phase="4" data-frame-start="166" data-frame-end="191">
+      <div class="phase-card">
+        <span class="phase-num">04 · HYDRO HERMETICS</span>
+        <h2 class="phase-title">IPX7 Submersible.<br>All-Day Endurance.</h2>
+        <p class="phase-desc">
+          Hydrophobic mesh barrier and nanocoated internal boards resist sweat, rain,
+          and dust with up to 36 hours total listening battery with the wireless charging cradle.
+        </p>
+        <div class="phase-stats">
+          <div>
+            <div class="phase-stat-val">IPX7</div>
+            <div class="phase-stat-label">Water Resistance</div>
+          </div>
+          <div>
+            <div class="phase-stat-val"><span class="odometer" data-target="36" data-suffix=" h">0</span></div>
+            <div class="phase-stat-label">Total Playtime</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       UNIFIED ECOSYSTEM SPECS SECTION (BENTO MATRIX)
+       ============================================================ -->
+  <section class="specs" id="specs">
+    <div class="specs-inner">
+      <div class="specs-eyebrow">UNIFIED HARDWARE MATRIX</div>
+      <h2 class="specs-title">Architected Together.<br>Engineered to Excel.</h2>
+      <p class="specs-subtitle">
+        Every device in the Titanium Quad Ecosystem communicates with sub-millisecond
+        latency, sharing compute pipelines, biometrics, and acoustic intelligence.
+      </p>
+
+      <div class="specs-grid">
+        <!-- Phone Spec Card -->
+        <div class="spec-card">
+          <div class="spec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <div class="spec-num">200 MP</div>
+          <div class="spec-name">Galaxy S26 Ultra</div>
+          <div class="spec-text">
+            4nm EUV Snapdragon Silicon with 45 TOPS NPU, Quad-Prism floating periscope lens, and aerospace Grade 5 titanium chassis.
+          </div>
+        </div>
+
+        <!-- Tab Spec Card -->
+        <div class="spec-card">
+          <div class="spec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+              <line x1="8" y1="2" x2="16" y2="2"></line>
+              <line x1="12" y1="17" x2="12" y2="17.01"></line>
+            </svg>
+          </div>
+          <div class="spec-num">14.6"</div>
+          <div class="spec-name">Galaxy Tab S11 Ultra</div>
+          <div class="spec-text">
+            14.6" Dynamic AMOLED 2X with 2.8ms S-Pen latency, 11,200mAh dual battery, and razor-thin 5.5mm Armor Titanium unibody.
+          </div>
+        </div>
+
+        <!-- Watch Spec Card -->
+        <div class="spec-card">
+          <div class="spec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="7"></circle>
+              <polyline points="12 9 12 12 13.5 13.5"></polyline>
+              <path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"></path>
+            </svg>
+          </div>
+          <div class="spec-num">10 ATM</div>
+          <div class="spec-name">Titanium Watch Ultra</div>
+          <div class="spec-text">
+            49mm Grade 5 Titanium armor with flat 9H sapphire crystal, dual-frequency L1+L5 GPS, and 100m expedition water seal.
+          </div>
+        </div>
+
+        <!-- Buds Spec Card -->
+        <div class="spec-card">
+          <div class="spec-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+              <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+            </svg>
+          </div>
+          <div class="spec-num">-48 dB</div>
+          <div class="spec-name">Titanium Buds Pro</div>
+          <div class="spec-text">
+            11mm Titanium dynamic driver with dual acoustic chambers, H1 neural adaptive noise cancellation, and IPX7 submersion seal.
+          </div>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <p>© 2026 TITANIUM HARDWARE LABS · ALL RIGHTS RESERVED · DESIGNED FOR NEXT-GEN HARDWARE SHOWCASE</p>
+      </footer>
+    </div>
+  </section>
+
+  <!-- Modular JavaScript Engine -->
+  <script src="app.js"></script>
+</body>
+
+</html>

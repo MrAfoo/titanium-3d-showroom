@@ -1,0 +1,15 @@
+# Ignore frame folders and video files
+frame/
+frame_buds/
+frame_tab/
+frame_watch/
+scratch/
+*.mp4
+*.webp
+*.jpg
+*.png
+
+# Environment & Metadata
+.agents/
+.claude/
+skills-lock.json
