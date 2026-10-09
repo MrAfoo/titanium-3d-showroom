@@ -14,6 +14,8 @@
   const WATCH_NAT_W = 1920, WATCH_NAT_H = 1080;
   const BUDS_NAT_W = 1920, BUDS_NAT_H = 1080;
 
+  const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && window.innerWidth < 1024);
+
   function pad3(n) {
     return String(n).padStart(3, '0');
   }
@@ -21,6 +23,12 @@
   /* --------------------------------------------------------
      DOM ELEMENTS
      -------------------------------------------------------- */
+  // Preloader
+  const preloader = document.getElementById('preloader');
+  const loaderBar = document.getElementById('loaderBar');
+  const loaderPct = document.getElementById('loaderPct');
+  const loaderStatusText = document.getElementById('loaderStatusText');
+
   // Canvases
   const canvasPhone = document.getElementById('canvasPhone');
   const ctxPhone = canvasPhone ? canvasPhone.getContext('2d') : null;
@@ -51,12 +59,50 @@
   const btnSwitchBuds = document.getElementById('btnSwitchBuds');
 
   /* --------------------------------------------------------
-     PRELOADING QUAD PIPELINES (SMART TIERED STREAMING)
+     PRELOADING QUAD PIPELINES & PRELOADER PROGRESS
      -------------------------------------------------------- */
   const imgsPhone = new Array(FRAME_COUNT);
   const imgsTab = new Array(FRAME_COUNT);
   const imgsWatch = new Array(FRAME_COUNT);
   const imgsBuds = new Array(FRAME_COUNT);
+
+  let initialLoadedCount = 0;
+  // Hero frames for fast boot: First frame of all 4 products + keyframes of Phone
+  const KEYFRAME_STEP = isMobile ? 6 : 4;
+  const initialPhoneKeyframes = [];
+  for (let i = 0; i < FRAME_COUNT; i += KEYFRAME_STEP) {
+    initialPhoneKeyframes.push(i);
+  }
+  if (!initialPhoneKeyframes.includes(FRAME_COUNT - 1)) {
+    initialPhoneKeyframes.push(FRAME_COUNT - 1);
+  }
+
+  // Total required frames for preloader completion
+  const totalInitialRequired = 4 + initialPhoneKeyframes.length;
+
+  function updatePreloaderProgress() {
+    initialLoadedCount++;
+    const pct = Math.min(100, Math.floor((initialLoadedCount / totalInitialRequired) * 100));
+
+    if (loaderPct) loaderPct.textContent = `${pct}%`;
+    if (loaderBar) {
+      const offset = 314 * (1 - pct / 100);
+      loaderBar.style.strokeDashoffset = offset;
+    }
+    if (loaderStatusText) {
+      if (pct < 30) loaderStatusText.textContent = 'INITIALIZING 3D HARDWARE TELEMETRY…';
+      else if (pct < 70) loaderStatusText.textContent = 'STREAMING TITANIUM SILICON CORE…';
+      else if (pct < 100) loaderStatusText.textContent = 'SYNCHRONIZING CANVAS LERP ENGINES…';
+      else loaderStatusText.textContent = 'SYSTEMS ONLINE · WELCOME TO TITANIUM';
+    }
+
+    if (initialLoadedCount >= totalInitialRequired) {
+      setTimeout(() => {
+        if (preloader) preloader.classList.add('done');
+        if (typeof redrawActiveCanvas === 'function') redrawActiveCanvas();
+      }, 250);
+    }
+  }
 
   function getLoadedFrame(targetArray, idx) {
     if (targetArray[idx] && targetArray[idx].complete && targetArray[idx].naturalWidth > 0) {
@@ -76,18 +122,24 @@
     return targetArray[0] && targetArray[0].complete ? targetArray[0] : null;
   }
 
-  function preloadPipelineSmart(folder, targetArray, drawFirstFrame) {
-    // Tier 1: Hero Frame 1 (Instant Render < 100ms)
+  function preloadPipelineSmart(folder, targetArray, isHeroProduct, drawFirstFrame) {
+    // Tier 1: Hero Frame 1
     const img1 = new Image();
     img1.src = `${folder}/ezgif-frame-001.jpg`;
-    img1.onload = () => { if (drawFirstFrame) drawFirstFrame(); };
+    img1.onload = () => {
+      updatePreloaderProgress();
+      if (drawFirstFrame) drawFirstFrame();
+    };
+    img1.onerror = () => { updatePreloaderProgress(); };
     targetArray[0] = img1;
 
-    // Tier 2: Keyframes (Every 4th frame for instant scrub responsiveness)
+    // Tier 2: Keyframes
     const keyframes = [];
     const inBetween = [];
+    const step = isMobile ? KEYFRAME_STEP : 4;
+
     for (let i = 1; i < FRAME_COUNT; i++) {
-      if (i % 4 === 0 || i === FRAME_COUNT - 1) {
+      if (i % step === 0 || i === FRAME_COUNT - 1) {
         keyframes.push(i);
       } else {
         inBetween.push(i);
@@ -97,14 +149,21 @@
     keyframes.forEach((i) => {
       const img = new Image();
       img.src = `${folder}/ezgif-frame-${pad3(i + 1)}.jpg`;
+      if (isHeroProduct && initialPhoneKeyframes.includes(i)) {
+        img.onload = updatePreloaderProgress;
+        img.onerror = updatePreloaderProgress;
+      }
       targetArray[i] = img;
     });
 
     // Tier 3: Staggered micro-batches for in-between frames during browser idle time
+    const batchDelay = isMobile ? 300 : 120;
+    const batchSize = isMobile ? 4 : 8;
+
     setTimeout(() => {
       let bIdx = 0;
       function loadBatch() {
-        const end = Math.min(inBetween.length, bIdx + 8);
+        const end = Math.min(inBetween.length, bIdx + batchSize);
         for (let j = bIdx; j < end; j++) {
           const i = inBetween[j];
           if (!targetArray[i]) {
@@ -118,23 +177,32 @@
           if ('requestIdleCallback' in window) {
             requestIdleCallback(loadBatch);
           } else {
-            setTimeout(loadBatch, 40);
+            setTimeout(loadBatch, isMobile ? 60 : 40);
           }
         }
       }
       loadBatch();
-    }, 120);
+    }, batchDelay);
   }
 
-  // Start smart tiered streaming across all 4 products
-  preloadPipelineSmart('frame', imgsPhone, () => { if (typeof redrawPhone === 'function') redrawPhone(); });
-  preloadPipelineSmart('frame_tab', imgsTab, () => { if (typeof redrawTab === 'function') redrawTab(); });
-  preloadPipelineSmart('frame_watch', imgsWatch, () => { if (typeof redrawWatch === 'function') redrawWatch(); });
-  preloadPipelineSmart('frame_buds', imgsBuds, () => { if (typeof redrawBuds === 'function') redrawBuds(); });
+  let redrawActiveCanvas;
+
+  // Start smart tiered streaming
+  preloadPipelineSmart('frame', imgsPhone, true, () => { if (typeof redrawPhone === 'function') redrawPhone(); });
+  preloadPipelineSmart('frame_tab', imgsTab, false, () => { if (typeof redrawTab === 'function') redrawTab(); });
+  preloadPipelineSmart('frame_watch', imgsWatch, false, () => { if (typeof redrawWatch === 'function') redrawWatch(); });
+  preloadPipelineSmart('frame_buds', imgsBuds, false, () => { if (typeof redrawBuds === 'function') redrawBuds(); });
 
   let redrawPhone, redrawTab, redrawWatch, redrawBuds;
 
-  // Initialize Showcase Engine Immediately
+  // Fallback safety for preloader (in case of slow network or cached assets)
+  setTimeout(() => {
+    if (preloader && !preloader.classList.contains('done')) {
+      preloader.classList.add('done');
+    }
+  }, 4500);
+
+  // Initialize Showcase Engine
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAllEngines);
   } else {
@@ -146,6 +214,9 @@
      -------------------------------------------------------- */
   function initAllEngines() {
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+    let activeStage = 'phone';
+    let isLoopRunning = false;
 
     let targetF_Phone = 0, currentF_Phone = 0, lastDrawn_Phone = -1;
     let targetF_Tab = 0, currentF_Tab = 0, lastDrawn_Tab = -1;
@@ -161,7 +232,8 @@
        CANVAS RESIZING (HiDPI)
        -------------------------------------------------------- */
     function sizeCanvases() {
-      const dpr = Math.min(devicePixelRatio || 1, 2);
+      const maxDpr = isMobile ? 1.25 : 2;
+      const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
 
       // Phone
       if (canvasPhone) {
@@ -231,12 +303,12 @@
       if (canR > imgR) { dw = logW_P; dh = logW_P / imgR; }
       else { dh = logH_P; dw = logH_P * imgR; }
 
-      if (innerWidth < 768) { dw *= 1.3; dh *= 1.3; }
+      if (innerWidth < 768) { dw *= 1.1; dh *= 1.1; }
 
       const ox = (logW_P - dw) / 2;
       const oy = (logH_P - dh) / 2;
       ctxPhone.imageSmoothingEnabled = true;
-      ctxPhone.imageSmoothingQuality = 'high';
+      ctxPhone.imageSmoothingQuality = isMobile ? 'medium' : 'high';
       ctxPhone.drawImage(img, ox, oy, dw, dh);
       lastDrawn_Phone = idx;
     }
@@ -257,12 +329,12 @@
       if (canR > imgR) { dw = logW_T; dh = logW_T / imgR; }
       else { dh = logH_T; dw = logH_T * imgR; }
 
-      if (innerWidth < 768) { dw *= 1.35; dh *= 1.35; }
+      if (innerWidth < 768) { dw *= 1.15; dh *= 1.15; }
 
       const ox = (logW_T - dw) / 2;
       const oy = (logH_T - dh) / 2;
       ctxTab.imageSmoothingEnabled = true;
-      ctxTab.imageSmoothingQuality = 'high';
+      ctxTab.imageSmoothingQuality = isMobile ? 'medium' : 'high';
       ctxTab.drawImage(img, ox, oy, dw, dh);
       lastDrawn_Tab = idx;
     }
@@ -283,12 +355,12 @@
       if (canR > imgR) { dw = logW_W; dh = logW_W / imgR; }
       else { dh = logH_W; dw = logH_W * imgR; }
 
-      if (innerWidth < 768) { dw *= 1.25; dh *= 1.25; }
+      if (innerWidth < 768) { dw *= 1.08; dh *= 1.08; }
 
       const ox = (logW_W - dw) / 2;
       const oy = (logH_W - dh) / 2;
       ctxWatch.imageSmoothingEnabled = true;
-      ctxWatch.imageSmoothingQuality = 'high';
+      ctxWatch.imageSmoothingQuality = isMobile ? 'medium' : 'high';
       ctxWatch.drawImage(img, ox, oy, dw, dh);
       lastDrawn_Watch = idx;
     }
@@ -309,72 +381,93 @@
       if (canR > imgR) { dw = logW_B; dh = logW_B / imgR; }
       else { dh = logH_B; dw = logH_B * imgR; }
 
-      if (innerWidth < 768) { dw *= 1.2; dh *= 1.2; }
+      if (innerWidth < 768) { dw *= 1.08; dh *= 1.08; }
 
       const ox = (logW_B - dw) / 2;
       const oy = (logH_B - dh) / 2;
       ctxBuds.imageSmoothingEnabled = true;
-      ctxBuds.imageSmoothingQuality = 'high';
+      ctxBuds.imageSmoothingQuality = isMobile ? 'medium' : 'high';
       ctxBuds.drawImage(img, ox, oy, dw, dh);
       lastDrawn_Buds = idx;
     }
 
-    redrawPhone = () => drawPhone(0, true);
-    redrawTab = () => drawTab(0, true);
-    redrawWatch = () => drawWatch(0, true);
-    redrawBuds = () => drawBuds(0, true);
+    redrawPhone = () => drawPhone(Math.round(currentF_Phone), true);
+    redrawTab = () => drawTab(Math.round(currentF_Tab), true);
+    redrawWatch = () => drawWatch(Math.round(currentF_Watch), true);
+    redrawBuds = () => drawBuds(Math.round(currentF_Buds), true);
+
+    redrawActiveCanvas = () => {
+      if (activeStage === 'phone') redrawPhone();
+      else if (activeStage === 'tab') redrawTab();
+      else if (activeStage === 'watch') redrawWatch();
+      else if (activeStage === 'buds') redrawBuds();
+    };
+
+    function startRenderLoop() {
+      if (!isLoopRunning) {
+        isLoopRunning = true;
+        requestAnimationFrame(renderLoop);
+      }
+    }
 
     /* --------------------------------------------------------
-       UNIFIED 60FPS LERP LOOP
+       EFFICIENT ACTIVE-STAGE LERP LOOP
        -------------------------------------------------------- */
     function renderLoop() {
-      const LERP = 0.16;
+      const LERP = isMobile ? 0.22 : 0.16;
+      let hasMovingAnim = false;
 
-      // Phone
-      const diffP = targetF_Phone - currentF_Phone;
-      if (Math.abs(diffP) > 0.005) {
-        const prevFrame = Math.round(currentF_Phone);
-        currentF_Phone += diffP * LERP;
-        const newFrame = Math.round(currentF_Phone);
-        if (newFrame !== prevFrame) playHapticTick();
-        drawPhone(newFrame);
-        updateHotspots(pinsPhone, currentF_Phone);
+      if (activeStage === 'phone') {
+        const diffP = targetF_Phone - currentF_Phone;
+        if (Math.abs(diffP) > 0.005) {
+          hasMovingAnim = true;
+          const prevFrame = Math.round(currentF_Phone);
+          currentF_Phone += diffP * LERP;
+          const newFrame = Math.round(currentF_Phone);
+          if (newFrame !== prevFrame) playHapticTick();
+          drawPhone(newFrame);
+          updateHotspots(pinsPhone, currentF_Phone);
+        }
+      } else if (activeStage === 'tab') {
+        const diffT = targetF_Tab - currentF_Tab;
+        if (Math.abs(diffT) > 0.005) {
+          hasMovingAnim = true;
+          const prevFrame = Math.round(currentF_Tab);
+          currentF_Tab += diffT * LERP;
+          const newFrame = Math.round(currentF_Tab);
+          if (newFrame !== prevFrame) playHapticTick();
+          drawTab(newFrame);
+          updateHotspots(pinsTab, currentF_Tab);
+        }
+      } else if (activeStage === 'watch') {
+        const diffW = targetF_Watch - currentF_Watch;
+        if (Math.abs(diffW) > 0.005) {
+          hasMovingAnim = true;
+          const prevFrame = Math.round(currentF_Watch);
+          currentF_Watch += diffW * LERP;
+          const newFrame = Math.round(currentF_Watch);
+          if (newFrame !== prevFrame) playHapticTick();
+          drawWatch(newFrame);
+          updateHotspots(pinsWatch, currentF_Watch);
+        }
+      } else if (activeStage === 'buds') {
+        const diffB = targetF_Buds - currentF_Buds;
+        if (Math.abs(diffB) > 0.005) {
+          hasMovingAnim = true;
+          const prevFrame = Math.round(currentF_Buds);
+          currentF_Buds += diffB * LERP;
+          const newFrame = Math.round(currentF_Buds);
+          if (newFrame !== prevFrame) playHapticTick();
+          drawBuds(newFrame);
+          updateHotspots(pinsBuds, currentF_Buds);
+        }
       }
 
-      // Tab
-      const diffT = targetF_Tab - currentF_Tab;
-      if (Math.abs(diffT) > 0.005) {
-        const prevFrame = Math.round(currentF_Tab);
-        currentF_Tab += diffT * LERP;
-        const newFrame = Math.round(currentF_Tab);
-        if (newFrame !== prevFrame) playHapticTick();
-        drawTab(newFrame);
-        updateHotspots(pinsTab, currentF_Tab);
+      if (hasMovingAnim) {
+        requestAnimationFrame(renderLoop);
+      } else {
+        isLoopRunning = false;
       }
-
-      // Watch
-      const diffW = targetF_Watch - currentF_Watch;
-      if (Math.abs(diffW) > 0.005) {
-        const prevFrame = Math.round(currentF_Watch);
-        currentF_Watch += diffW * LERP;
-        const newFrame = Math.round(currentF_Watch);
-        if (newFrame !== prevFrame) playHapticTick();
-        drawWatch(newFrame);
-        updateHotspots(pinsWatch, currentF_Watch);
-      }
-
-      // Buds
-      const diffB = targetF_Buds - currentF_Buds;
-      if (Math.abs(diffB) > 0.005) {
-        const prevFrame = Math.round(currentF_Buds);
-        currentF_Buds += diffB * LERP;
-        const newFrame = Math.round(currentF_Buds);
-        if (newFrame !== prevFrame) playHapticTick();
-        drawBuds(newFrame);
-        updateHotspots(pinsBuds, currentF_Buds);
-      }
-
-      requestAnimationFrame(renderLoop);
     }
 
     /* --------------------------------------------------------
@@ -504,7 +597,6 @@
         btnCheckout.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
         if (isAudioActive) playHapticTick(2400);
 
-        // Open Samsung official store in a new tab
         window.open('https://www.samsung.com', '_blank', 'noopener,noreferrer');
 
         setTimeout(() => {
@@ -523,13 +615,16 @@
     }
 
     /* --------------------------------------------------------
-       TURNTABLE 360° DRAG (All 4 Canvases)
+       TURNTABLE 360° DRAG (WITH MOBILE TOUCH SCROLL INTENT)
        -------------------------------------------------------- */
     function bindTurntable(wrap, getTarget, setTarget) {
       if (!wrap) return;
       let isDragging = false;
       let startX = 0;
+      let startY = 0;
       let startF = 0;
+      let touchAxisDetermined = false;
+      let isHorizontalDrag = false;
 
       wrap.addEventListener('mousedown', (e) => {
         if (e.target.closest('.hotspot-pin')) return;
@@ -544,6 +639,7 @@
         const dx = e.clientX - startX;
         const delta = (dx / innerWidth) * FRAME_COUNT * 0.9;
         setTarget(Math.max(0, Math.min(FRAME_COUNT - 1, startF - delta)));
+        startRenderLoop();
       });
 
       window.addEventListener('mouseup', () => {
@@ -553,24 +649,47 @@
         }
       });
 
-      // Touch
+      // Touch events
       wrap.addEventListener('touchstart', (e) => {
         if (e.target.closest('.hotspot-pin')) return;
         if (e.touches.length === 1) {
           isDragging = true;
+          touchAxisDetermined = false;
+          isHorizontalDrag = false;
           startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
           startF = getTarget();
         }
       }, { passive: true });
 
       window.addEventListener('touchmove', (e) => {
         if (!isDragging || e.touches.length !== 1) return;
-        const dx = e.touches[0].clientX - startX;
-        const delta = (dx / innerWidth) * FRAME_COUNT * 0.9;
-        setTarget(Math.max(0, Math.min(FRAME_COUNT - 1, startF - delta)));
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+        const dx = touchX - startX;
+        const dy = touchY - startY;
+
+        if (!touchAxisDetermined) {
+          if (Math.abs(dx) > Math.abs(dy) + 4) {
+            isHorizontalDrag = true;
+            touchAxisDetermined = true;
+          } else if (Math.abs(dy) > Math.abs(dx) + 4) {
+            isHorizontalDrag = false;
+            touchAxisDetermined = true;
+          }
+        }
+
+        if (isHorizontalDrag) {
+          const delta = (dx / innerWidth) * FRAME_COUNT * 0.9;
+          setTarget(Math.max(0, Math.min(FRAME_COUNT - 1, startF - delta)));
+          startRenderLoop();
+        }
       }, { passive: true });
 
-      window.addEventListener('touchend', () => { isDragging = false; });
+      window.addEventListener('touchend', () => {
+        isDragging = false;
+        touchAxisDetermined = false;
+      });
     }
 
     bindTurntable(wrapPhone, () => targetF_Phone, v => { targetF_Phone = v; });
@@ -581,17 +700,19 @@
     /* --------------------------------------------------------
        DYNAMIC CURSOR SPOTLIGHT
        -------------------------------------------------------- */
-    [wrapPhone, wrapTab, wrapWatch, wrapBuds].forEach(wrap => {
-      if (wrap) {
-        wrap.addEventListener('mousemove', (e) => {
-          const r = wrap.getBoundingClientRect();
-          const x = ((e.clientX - r.left) / r.width) * 100;
-          const y = ((e.clientY - r.top) / r.height) * 100;
-          wrap.style.setProperty('--mouse-x', `${x.toFixed(1)}%`);
-          wrap.style.setProperty('--mouse-y', `${y.toFixed(1)}%`);
-        });
-      }
-    });
+    if (!isMobile) {
+      [wrapPhone, wrapTab, wrapWatch, wrapBuds].forEach(wrap => {
+        if (wrap) {
+          wrap.addEventListener('mousemove', (e) => {
+            const r = wrap.getBoundingClientRect();
+            const x = ((e.clientX - r.left) / r.width) * 100;
+            const y = ((e.clientY - r.top) / r.height) * 100;
+            wrap.style.setProperty('--mouse-x', `${x.toFixed(1)}%`);
+            wrap.style.setProperty('--mouse-y', `${y.toFixed(1)}%`);
+          });
+        }
+      });
+    }
 
     /* --------------------------------------------------------
        ODOMETER NUMBER COUNTER ANIMATOR
@@ -628,19 +749,21 @@
     /* --------------------------------------------------------
        3D BENTO PERSPECTIVE TILT
        -------------------------------------------------------- */
-    document.querySelectorAll('.spec-card').forEach(card => {
-      card.addEventListener('mousemove', (e) => {
-        const r = card.getBoundingClientRect();
-        const centerX = r.width / 2;
-        const centerY = r.height / 2;
-        const rotateX = ((e.clientY - r.top - centerY) / centerY) * -10;
-        const rotateY = ((e.clientX - r.left - centerX) / centerX) * 10;
-        card.style.transform = `perspective(800px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+    if (!isMobile) {
+      document.querySelectorAll('.spec-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const r = card.getBoundingClientRect();
+          const centerX = r.width / 2;
+          const centerY = r.height / 2;
+          const rotateX = ((e.clientY - r.top - centerY) / centerY) * -10;
+          const rotateY = ((e.clientX - r.left - centerX) / centerX) * 10;
+          card.style.transform = `perspective(800px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)';
+        });
       });
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)';
-      });
-    });
+    }
 
     /* --------------------------------------------------------
        GSAP SCROLLTRIGGER PIPELINES
@@ -652,22 +775,24 @@
           trigger: '#phoneStage',
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.5,
+          scrub: isMobile ? 0.2 : 0.5,
           onUpdate: (self) => {
             targetF_Phone = self.progress * (FRAME_COUNT - 1);
+            startRenderLoop();
           }
         });
       }
 
-      // 2. Tab Stage Scrollytelling (Capped at frame 155 to stay in fully open exploded view)
+      // 2. Tab Stage Scrollytelling
       if (document.getElementById('tabStage')) {
         ScrollTrigger.create({
           trigger: '#tabStage',
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.5,
+          scrub: isMobile ? 0.2 : 0.5,
           onUpdate: (self) => {
             targetF_Tab = self.progress * 155;
+            startRenderLoop();
           }
         });
       }
@@ -678,9 +803,10 @@
           trigger: '#watchStage',
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.5,
+          scrub: isMobile ? 0.2 : 0.5,
           onUpdate: (self) => {
             targetF_Watch = self.progress * (FRAME_COUNT - 1);
+            startRenderLoop();
           }
         });
       }
@@ -691,9 +817,10 @@
           trigger: '#budsStage',
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.5,
+          scrub: isMobile ? 0.2 : 0.5,
           onUpdate: (self) => {
             targetF_Buds = self.progress * (FRAME_COUNT - 1);
+            startRenderLoop();
           }
         });
       }
@@ -704,23 +831,23 @@
         if (!card) return;
 
         gsap.fromTo(card,
-          { opacity: 0, y: 50 },
+          { opacity: 0, y: isMobile ? 30 : 50 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.8,
+            duration: isMobile ? 0.5 : 0.8,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: phase,
-              start: 'top 75%',
-              end: 'bottom 25%',
+              start: isMobile ? 'top 85%' : 'top 75%',
+              end: isMobile ? 'bottom 15%' : 'bottom 25%',
               toggleActions: 'play reverse play reverse'
             }
           }
         );
       });
 
-      // Navbar Active Switcher Sync
+      // Navbar Active Switcher Sync & Active Stage Tracking
       const navButtons = {
         phone: btnSwitchPhone,
         tab: btnSwitchTab,
@@ -729,12 +856,15 @@
       };
 
       function setActiveNav(stageKey) {
+        activeStage = stageKey;
         Object.values(navButtons).forEach(btn => {
           if (btn) btn.classList.remove('active');
         });
         if (navButtons[stageKey]) {
           navButtons[stageKey].classList.add('active');
         }
+        redrawActiveCanvas();
+        startRenderLoop();
       }
 
       // Smooth Click Scrolling for Nav Switcher & Brand
@@ -755,7 +885,7 @@
             if (el) {
               gsap.to(window, {
                 scrollTo: { y: el, offsetY: 0 },
-                duration: 1.1,
+                duration: isMobile ? 0.8 : 1.1,
                 ease: 'power3.inOut'
               });
             }
@@ -771,7 +901,7 @@
           if (isAudioActive) playHapticTick(2200);
           gsap.to(window, {
             scrollTo: { y: 0 },
-            duration: 1.2,
+            duration: isMobile ? 0.9 : 1.2,
             ease: 'power3.inOut'
           });
         });
@@ -823,6 +953,6 @@
     window.addEventListener('resize', sizeCanvases);
     initScrollTriggers();
     initOdometers();
-    renderLoop();
+    startRenderLoop();
   }
 })();

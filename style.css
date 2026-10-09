@@ -48,14 +48,15 @@ body {
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: #0d0d11;
+  background: #09090d;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.7s var(--ease-expo), visibility 0.7s;
+  transition: opacity 0.6s var(--ease-expo), visibility 0.6s;
   color: var(--text-light);
   text-align: center;
+  padding: 24px;
 }
 
 #preloader.done {
@@ -64,15 +65,46 @@ body {
   pointer-events: none;
 }
 
-.loader-label {
-  font-family: var(--font-display);
-  font-size: 0.8rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 20px;
+.loader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
+}
+
+.loader-brand {
   display: flex;
   align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.loader-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loader-title .brand-badge {
+  font-size: 0.55rem;
+}
+
+.loader-label {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -82,13 +114,14 @@ body {
   border-radius: 50%;
   background: var(--accent-cyan);
   box-shadow: 0 0 10px var(--accent-cyan);
+  animation: badgePulse 1.5s infinite ease-in-out;
 }
 
 .loader-ring-box {
   position: relative;
-  width: 110px;
-  height: 110px;
-  margin-bottom: 20px;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 24px;
 }
 
 .loader-ring-box svg {
@@ -113,7 +146,7 @@ body {
   stroke: url(#grad);
   stroke-dasharray: 314;
   stroke-dashoffset: 314;
-  transition: stroke-dashoffset 0.12s ease-out;
+  transition: stroke-dashoffset 0.15s ease-out;
 }
 
 .loader-pct {
@@ -123,13 +156,14 @@ body {
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #fff;
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
 }
 
 .loader-msg {
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   color: var(--text-muted);
   max-width: 320px;
   line-height: 1.5;
@@ -1330,7 +1364,9 @@ body {
   color: #64748b;
 }
 
-/* Responsive Navigation & Layout */
+/* ================================================================
+   RESPONSIVE DESIGN & MOBILE OPTIMIZATIONS
+   ================================================================ */
 @media (max-width: 960px) {
   .brand-badge {
     display: none;
@@ -1351,11 +1387,11 @@ body {
 
   .navbar {
     padding: 6px 10px;
-    gap: 8px;
+    gap: 6px;
   }
 
   .navbar-name {
-    font-size: 0.86rem;
+    font-size: 0.84rem;
   }
 
   .brand-glyph,
@@ -1388,15 +1424,105 @@ body {
     font-size: 0.74rem;
   }
 
+  /* Mobile Phase Scrollytelling Cards */
   .phase:nth-child(odd),
   .phase:nth-child(even) {
     justify-content: center !important;
-    padding-left: 16px !important;
-    padding-right: 16px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
   }
 
   .phase-card {
     max-width: 100%;
+    padding: 20px 18px;
+    border-radius: 20px;
+    background: rgba(12, 12, 16, 0.92);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  .phase-hero .phase-card {
+    padding: 24px 18px;
+  }
+
+  .phase-title {
+    font-size: clamp(1.4rem, 5.5vw, 2rem);
+    line-height: 1.18;
+  }
+
+  .phase-hero .phase-title {
+    font-size: clamp(1.8rem, 7vw, 3rem);
+  }
+
+  .phase-desc {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+
+  .phase-stats {
+    gap: 12px;
+    padding-top: 12px;
+  }
+
+  .phase-stat-val {
+    font-size: 1.15rem;
+  }
+
+  .phase-stat-label {
+    font-size: 0.65rem;
+  }
+
+  .scroll-cue {
+    bottom: 20px;
+    padding: 6px 14px;
+    font-size: 0.68rem;
+  }
+
+  /* Hotspot Pins Mobile Optimization (Native Mobile Bottom Sheet Pattern) */
+  .hotspot-pin {
+    touch-action: manipulation;
+  }
+
+  .pin-beacon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pin-beacon::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+
+  .hotspot-pin .pin-card {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 20px !important;
+    left: 16px !important;
+    right: 16px !important;
+    transform: translateY(20px) !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    width: auto !important;
+    border-radius: 20px;
+    background: rgba(15, 15, 22, 0.96);
+    backdrop-filter: blur(36px) saturate(220%);
+    -webkit-backdrop-filter: blur(36px) saturate(220%);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    box-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.85),
+      0 0 20px rgba(0, 210, 255, 0.2);
+    z-index: 99999 !important;
+    padding: 16px 20px;
+  }
+
+  .hotspot-pin.card-open .pin-card {
+    transform: translateY(0) !important;
+  }
+
+  .hotspot-pin .pin-card::after {
+    display: none !important;
   }
 }
 
@@ -1410,11 +1536,15 @@ body {
   }
 
   .nav-switch-btn {
-    padding: 6px 8px;
+    padding: 6px 9px;
   }
 
   .nav-switch-btn svg {
     width: 16px;
     height: 16px;
+  }
+
+  .specs-grid {
+    grid-template-columns: 1fr;
   }
 }
